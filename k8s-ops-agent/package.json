@@ -1,0 +1,25 @@
+{
+  "name": "k8s-ops-agent",
+  "version": "1.0.0",
+  "description": "An operations agent for Kubernetes that interacts with Azure AI Foundry.",
+  "main": "src/agent/main.ts",
+  "scripts": {
+    "start": "ts-node src/agent/main.ts",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "typescript": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.7",
+    "ts-node": "^10.4.0",
+    "jest": "^27.0.6",
+    "@types/jest": "^27.0.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "license": "MIT"
+}
