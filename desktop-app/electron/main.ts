@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'path';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
@@ -114,7 +114,16 @@ ipcMain.handle('get-config', () => {
   return { configured: !!(config.endpoint && config.apiKey) };
 });
 
-ipcMain.handle('chat', async (event, userMessage: string) => {
+ipcMain.handle('select-directory', async () => {
+  if (!mainWindow) return null;
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory']
+  });
+  if (result.canceled) return null;
+  return result.filePaths[0];
+});
+
+ipcMain.handle('chat', async (event, userMessage: string, workspacePath?: string) => {
   const config = loadConfig();
   
   if (!config.endpoint || !config.apiKey) {
@@ -123,7 +132,10 @@ ipcMain.handle('chat', async (event, userMessage: string) => {
 
   // Initialize history if empty
   if (chatHistory.length === 0) {
-    const systemPrompt = loadPrompt(config.promptFile);
+    let systemPrompt = loadPrompt(config.promptFile);
+    if (workspacePath) {
+      systemPrompt += `\n\nImportant: The user has selected the following directory as their active workspace: ${workspacePath}. You MUST execute any project-specific shell commands with this directory as your current working directory.`;
+    }
     chatHistory.push({ role: 'system', content: systemPrompt });
   }
 

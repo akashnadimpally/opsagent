@@ -26,6 +26,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           command: {
             type: "string",
             description: "The shell command to execute"
+          },
+          cwd: {
+            type: "string",
+            description: "Optional. The working directory to execute the command in. If not provided, it runs in the default agent directory."
           }
         },
         required: ["command"]
@@ -36,9 +40,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (request.params.name === "run_command") {
-    const { command } = request.params.arguments;
+    const { command, cwd } = request.params.arguments as any;
     try {
-      const { stdout, stderr } = await execAsync(command);
+      const execOptions = cwd ? { cwd } : {};
+      const { stdout, stderr } = await execAsync(command, execOptions);
       return {
         content: [
           {

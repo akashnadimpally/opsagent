@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Terminal, Send, Settings, Activity, CheckCircle, AlertCircle } from 'lucide-react';
+import { Terminal, Send, Settings, Activity, CheckCircle, AlertCircle, Folder } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'ai';
@@ -14,6 +14,7 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [toolStatus, setToolStatus] = useState<string | null>(null);
   const [isConfigured, setIsConfigured] = useState(false);
+  const [workspacePath, setWorkspacePath] = useState<string>(localStorage.getItem('opsagent_workspace') || '');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +40,16 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const handleSelectWorkspace = async () => {
+    if ((window as any).electron?.selectDirectory) {
+      const dir = await (window as any).electron.selectDirectory();
+      if (dir) {
+        setWorkspacePath(dir);
+        localStorage.setItem('opsagent_workspace', dir);
+      }
+    }
+  };
+
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!input.trim() || loading) return;
@@ -56,7 +67,7 @@ const App: React.FC = () => {
     setToolStatus(null);
 
     try {
-      const response = await (window as any).electron.chat(userMessage);
+      const response = await (window as any).electron.chat(userMessage, workspacePath);
       
       if (response.error) {
         setMessages(prev => [...prev, { role: 'ai', content: `Error: ${response.error}` }]);
@@ -79,6 +90,45 @@ const App: React.FC = () => {
           <div className="sidebar-header">
             <Terminal size={24} />
             K8s Ops Agent
+          </div>
+          
+          <div className="config-section" style={{ marginTop: '20px' }}>
+            <div className="sidebar-header" style={{ fontSize: '14px', marginBottom: '12px' }}>
+              <Folder size={16} />
+              Active Workspace
+            </div>
+            
+            <div 
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                background: 'rgba(0,0,0,0.2)',
+                padding: '12px',
+                borderRadius: '8px',
+                border: '1px solid var(--border)'
+              }}
+            >
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', wordBreak: 'break-all' }}>
+                {workspacePath || 'No workspace selected (Defaulting to Agent directory)'}
+              </div>
+              <button 
+                onClick={handleSelectWorkspace}
+                style={{
+                  background: 'var(--primary)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '6px 12px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  alignSelf: 'flex-start',
+                  transition: 'background 0.2s'
+                }}
+              >
+                Change Workspace
+              </button>
+            </div>
           </div>
           
           <div className="config-section" style={{ marginTop: 'auto', marginBottom: '20px' }}>
