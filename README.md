@@ -7,7 +7,11 @@ A cross-platform desktop application powered by Azure AI Foundry and the Model C
 - **Native Desktop App:** Built with Electron, React, and Vite for a fast, browser-free experience.
 - **Modern Interactive UI:** A sleek dark-mode interface with chat bubbles and real-time tool execution status indicators.
 - **Model Context Protocol (MCP):** Uses a local Node.js MCP server that safely executes shell commands across Windows, Linux, and macOS.
-- **Azure AI Foundry Integration:** Connects directly to Azure OpenAI using dynamic credentials provided in the UI.
+- **Azure AI Foundry Integration:** Connects directly to Azure OpenAI using dynamic credentials.
+- **kDashM Dashboard Integration:** Can be embedded as a floating AI assistant within the kDashM dashboard for a unified cluster management experience.
+
+## kDashM Integration
+This agent can be run as a standalone Electron app or as a headless API for the **kDashM Dashboard**. For instructions on how to use it with kDashM, see [INTEGRATION_WITH_KDASHM.md](./INTEGRATION_WITH_KDASHM.md).
 - **Customizable Prompt:** Reads the system prompt directly from `prompt.md`, allowing you to easily tweak the agent's behavior and guardrails without modifying the codebase.
 
 ## Repository Structure
