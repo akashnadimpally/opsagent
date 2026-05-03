@@ -40,7 +40,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (request.params.name === "run_command") {
-    const { command, cwd } = request.params.arguments as any;
+    const { command, cwd } = request.params.arguments;
     try {
       const execOptions = cwd ? { cwd } : {};
       const { stdout, stderr } = await execAsync(command, execOptions);
